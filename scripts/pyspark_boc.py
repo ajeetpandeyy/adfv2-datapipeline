@@ -17,13 +17,13 @@ schema = StructType ([
         StructField("upload", DoubleType(), True)])
 
 ## Read in CSV file ##
-df0 = spark.read.csv('wasb://CONTAINERNAME@STORAGEACCOUNT.blob.core.windows.net/input-data/', header=False, schema=schema)
+df0 = spark.read.csv("wasb://CONTAINERNAME@STORAGEACCOUNT.blob.core.windows.net/input-data/", header=False, schema=schema)
 
 ## Cast column 'date_start' from timestamp to date ##
-df1 = df0.withColumn('date_start', df0['date_start'].cast('date'))
+df1 = df0.withColumn("date_start", df0["date_start"].cast("date"))
 
 ## Calculate Average Download and Upload by Server ##
-df2 = df1.select(col('date_start'), col('server'), col('download'), col('upload')).groupBy('date_start', 'server').agg(avg('download'), avg('upload'))
+df2 = df1.select("date_start", "server", "download", "upload").groupBy("date_start", "server").agg(avg("download"), avg("upload"))
 
 ## Write results to CSV file partitioned by 'server' ##
-df2.write.partitionBy('server').mode('append').format('csv').save('wasb://CONTAINERNAME@STORAGEACCOUNT.blob.core.windows.net/output-data/')
+df2.write.partitionBy("server").mode("append").format("csv").save("wasb://CONTAINERNAME@STORAGEACCOUNT.blob.core.windows.net/output-data/")
